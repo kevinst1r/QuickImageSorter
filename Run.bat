@@ -1,2 +1,2 @@
 @echo off
-start /min cmd /c "python main.pyw"
+start /min cmd /c "python main.py"
