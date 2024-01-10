@@ -7,14 +7,14 @@ Quickly sort directories of images, sending them to the desired folder(s).
 
 
 # Hotkeys:
-E: Edit 
-F: Favorite 
-M: Move all files 
-C: Clear All Image 
-A: Add Directory 
-H: Hide all sorted toggle 
-S: Settings 
-1: Toggle Filename Visibility 
+E: Edit <br />
+F: Favorite <br />
+M: Move all files <br />
+C: Clear All Image <br />
+A: Add Directory <br />
+H: Hide all sorted toggle <br />
+S: Settings <br />
+1: Toggle Filename Visibility <br />
 Arrow Keys for Previous and Last Image
 
 # Notes:
