@@ -11,16 +11,17 @@ Quickly sort directories of images, sending them to the desired folder(s).
 # Hotkeys:
 E: Edit <br />
 F: Favorite <br />
-M: Move all files <br />
+M: Move All files <br />
 C: Clear All Image <br />
 A: Add Directory <br />
-H: Hide all sorted toggle <br />
+H: Hide All Sorted Toggle <br />
 S: Settings <br />
-1: Toggle Filename Visibility <br />
+1: Filename Visibility Toggle <br />
 Arrow Keys: Previous and Last Image
 
 # Notes:
-- When you select a folder when moving all the images it automatically saves all the images to the specified folders (Favorite/Edit).  If you Favorited and Edited it would get duplicated into both. <br />
+- When you select a folder when Moving All Files it automatically moves all the images to the specified folders (Favorite/Edit).  If you Favorited AND Edited it would get duplicated into both.
+- Hover over buttons for Tooltips
 - GIF Support
 - WIP
 
