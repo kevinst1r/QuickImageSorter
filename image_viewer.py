@@ -1,7 +1,7 @@
-#main.pyw
+#image_viewer.pyw
 
 from settings import SettingsDialog
-from outlined_label import OutlinedLabel
+from utility import OutlinedLabel
 import os
 import sys
 import json
@@ -10,8 +10,6 @@ from PyQt5.QtGui import QPixmap, QIcon, QPainter, QPalette, QColor, QKeySequence
 from PyQt5.QtCore import QDir, Qt, QSize, QTimer
 from PyQt5 import QtCore
 import shutil
-
-
 
 class ImageViewer(QMainWindow):
     def __init__(self):
@@ -691,14 +689,3 @@ class ImageViewer(QMainWindow):
         elif event.type() == QtCore.QEvent.Leave and hasattr(source, 'hoverTimer'):
             source.hoverTimer.stop()
         return super(ImageViewer, self).eventFilter(source, event)
-
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    app.setStyle('Fusion')  # Set the Fusion style
-    app.setPalette(dark_palette())  # Apply the dark theme palette
-
-    viewer = ImageViewer()
-    viewer.show()
-    sys.exit(app.exec_())
