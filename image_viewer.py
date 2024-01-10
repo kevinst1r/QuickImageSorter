@@ -11,11 +11,33 @@ from PyQt5 import QtCore
 import shutil
 
 class ImageViewer(QMainWindow):
-    def __init__(self):
+    def __init__(self, initialDir=None):
         super().__init__()
 
+        # Determine the base directory of the script
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Update paths to use absolute paths
+        icon_path = os.path.join(base_dir, 'images', 'icon.png')
+        next_icon_path = os.path.join(base_dir, 'images', 'next.png')
+        back_icon_path = os.path.join(base_dir, 'images', 'back.png')
+        favorite_icon_path = os.path.join(base_dir, 'images', 'favorite.png')
+        edit_icon_path = os.path.join(base_dir, 'images', 'edit.png')
+        self.edit_icon_path = os.path.join(base_dir, 'images', 'edit.png')
+        add_icon_path = os.path.join(base_dir, 'images', 'add.png')
+        clear_icon_path = os.path.join(base_dir, 'images', 'clear.png')
+        hide_icon_path = os.path.join(base_dir, 'images', 'hide.png')
+        delete_icon_path = os.path.join(base_dir, 'images', 'delete.png')
+        settings_icon_path = os.path.join(base_dir, 'images', 'settings.png')
+        move_icon_path = os.path.join(base_dir, 'images', 'move.png')
+        icon_icon_path = os.path.join(base_dir, 'images', 'icon.png')
+        self.nodirectory_icon_path = os.path.join(base_dir, 'images', 'nodirectory.png')
+        self.moved_icon_path = os.path.join(base_dir, 'images', 'moved.png')
+        #back_icon_path = os.path.join(base_dir, 'images', 'back.png')
+        # ... and so on for other images ...
+
         self.setWindowTitle("Quick Image Sorter")
-        self.setWindowIcon(QIcon('images/icon.png'))
+        self.setWindowIcon(QIcon(icon_icon_path))
         self.setGeometry(100, 100, 800, 800)
 
         self.edits = set()
@@ -23,8 +45,9 @@ class ImageViewer(QMainWindow):
         self.originalImages = []
         self.show_filenames = True
         self.load_settings()
-        self.favoriteIcon = QPixmap('images/favorite.png')
-        self.imageFolder = ''
+        self.favoriteIcon = QPixmap(favorite_icon_path)
+
+        self.imageFolder = initialDir if initialDir else ''
         self.images = []
         self.currentIndex = -1
         self.favorites = set()
@@ -60,7 +83,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Next' button with PNG icon
         self.nextButton = QPushButton(self.imageLabel)
-        self.nextButton.setIcon(QIcon('images/next.png'))  # Set your PNG file path
+        self.nextButton.setIcon(QIcon(next_icon_path))  # Set your PNG file path
         self.nextButton.setIconSize(icon_size)
         self.nextButton.setMaximumSize(icon_size)
         self.nextButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -72,7 +95,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Previous' button with PNG icon
         self.prevButton = QPushButton(self.imageLabel)
-        self.prevButton.setIcon(QIcon('images/back.png'))  # Set your PNG file path
+        self.prevButton.setIcon(QIcon(back_icon_path))  # Set your PNG file path
         self.prevButton.setIconSize(icon_size)
         self.prevButton.setMaximumSize(icon_size)
         self.prevButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -84,7 +107,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Toggle Favorite' button with PNG icon
         self.favButton = QPushButton()
-        self.favButton.setIcon(QIcon('images/favorite.png'))  # Set your PNG file path
+        self.favButton.setIcon(QIcon(favorite_icon_path))  # Set your PNG file path
         self.favButton.setIconSize(icon_size)
         self.favButton.setMaximumSize(icon_size)
         self.favButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -97,7 +120,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Toggle Edit' button with a new icon
         self.editButton = QPushButton()
-        self.editButton.setIcon(QIcon('images/edit.png'))  # Set your PNG file path for the 'edit' icon
+        self.editButton.setIcon(QIcon(edit_icon_path))  # Set your PNG file path for the 'edit' icon
         self.editButton.setIconSize(icon_size)
         self.editButton.setMaximumSize(icon_size)
         self.editButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -110,7 +133,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Add Directory' button with PNG icon
         self.addDirButton = QPushButton()
-        self.addDirButton.setIcon(QIcon('images/add.png'))  # Set your PNG file path
+        self.addDirButton.setIcon(QIcon(add_icon_path))  # Set your PNG file path
         self.addDirButton.setIconSize(icon_size)
         self.addDirButton.setMaximumSize(icon_size)
         self.addDirButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -122,7 +145,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Clear All' button with PNG icon
         self.clearButton = QPushButton()
-        self.clearButton.setIcon(QIcon('images/clear.png'))  # Set your PNG file path
+        self.clearButton.setIcon(QIcon(clear_icon_path))  # Set your PNG file path
         self.clearButton.setIconSize(icon_size)
         self.clearButton.setMaximumSize(icon_size)
         self.clearButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -134,7 +157,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Clear All Sorted' button with PNG icon
         self.clearSortedButton = QPushButton()
-        self.clearSortedButton.setIcon(QIcon('images/hide.png'))  # Set your PNG file path
+        self.clearSortedButton.setIcon(QIcon(hide_icon_path))  # Set your PNG file path
         self.clearSortedButton.setIconSize(icon_size)
         self.clearSortedButton.setMaximumSize(icon_size)
         self.clearSortedButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -146,7 +169,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Delete' button with PNG icon
         self.deleteButton = QPushButton()
-        self.deleteButton.setIcon(QIcon('images/delete.png'))  # Set your PNG file path for the 'delete' icon
+        self.deleteButton.setIcon(QIcon(delete_icon_path))  # Set your PNG file path for the 'delete' icon
         self.deleteButton.setIconSize(icon_size) 
         self.deleteButton.setMaximumSize(icon_size)
         self.deleteButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -156,9 +179,9 @@ class ImageViewer(QMainWindow):
         self.deleteShortcut = QShortcut(QKeySequence("Del"), self)
         self.deleteShortcut.activated.connect(self.delete_image)
         
-        # Create the 'Delete' button with PNG icon
+        # Create the 'Settings' button with PNG icon
         self.settingsButton = QPushButton()
-        self.settingsButton.setIcon(QIcon('images/settings.png'))
+        self.settingsButton.setIcon(QIcon(settings_icon_path))
         self.settingsButton.setIconSize(icon_size)
         self.settingsButton.setMaximumSize(icon_size)
         self.settingsButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -170,7 +193,7 @@ class ImageViewer(QMainWindow):
 
         # Create the 'Move Favorites' button with PNG icon
         self.moveButton = QPushButton()
-        self.moveButton.setIcon(QIcon('images/move.png'))  # Set your PNG file path
+        self.moveButton.setIcon(QIcon(move_icon_path))  # Set your PNG file path
         self.moveButton.setIconSize(icon_size)
         self.moveButton.setMaximumSize(icon_size)
         self.moveButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
@@ -332,7 +355,9 @@ class ImageViewer(QMainWindow):
             self.show_image()
 
     def load_images(self):
-        self.imageFolder = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if not self.imageFolder:
+            self.imageFolder = QFileDialog.getExistingDirectory(self, "Select Directory")
+        
         if self.imageFolder:
             # Filter for common image file extensions
             image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff']
@@ -350,7 +375,7 @@ class ImageViewer(QMainWindow):
 
     def show_no_images_placeholder(self):
         # Function to show the 'no directory' placeholder and disable buttons
-        no_directory_placeholder_path = 'images/nodirectory.png'
+        no_directory_placeholder_path = self.nodirectory_icon_path
         pixmap = QPixmap(no_directory_placeholder_path)
         self.imageLabel.setPixmap(pixmap)
         self.favButton.setEnabled(False)
@@ -362,8 +387,8 @@ class ImageViewer(QMainWindow):
         self.clear_gif_overlays()
 
         # Placeholder paths
-        no_directory_placeholder_path = 'images/nodirectory.png'
-        moved_placeholder_path = 'images/moved.png'
+        no_directory_placeholder_path = self.nodirectory_icon_path
+        moved_placeholder_path = self.moved_icon_path
 
         # Check if there are images in the list
         if not self.images:
@@ -441,7 +466,7 @@ class ImageViewer(QMainWindow):
                 painter.drawPixmap(x_icon, y_icon, resized_favorite_icon)
 
             if image_path in self.edits:
-                edit_icon = QPixmap('images/edit.png')
+                edit_icon = QPixmap(self.edit_icon_path)
                 resized_edit_icon = edit_icon.scaled(icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 x_edit_icon = 10
                 y_edit_icon = 95
@@ -468,7 +493,7 @@ class ImageViewer(QMainWindow):
         # Create and position the edit icon if the image is marked for edit
         if image_path in self.edits:
             self.editOverlay = QLabel(self.imageLabel)
-            edit_icon = QPixmap('images/edit.png')
+            edit_icon = QPixmap(edit_icon_path)
             self.editOverlay.setPixmap(edit_icon.scaled(icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.editOverlay.setGeometry(x_edit_icon, y_edit_icon, icon_size.width(), icon_size.height())
             self.editOverlay.show()

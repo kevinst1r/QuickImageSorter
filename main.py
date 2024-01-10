@@ -11,6 +11,11 @@ if __name__ == '__main__':
     app.setStyle('Fusion')
     app.setPalette(dark_palette())
 
-    viewer = ImageViewer()
+    initialDir = None
+    if len(sys.argv) > 1:
+        initialDir = sys.argv[1]
+
+    viewer = ImageViewer(initialDir)
     viewer.show()
     sys.exit(app.exec_())
+
