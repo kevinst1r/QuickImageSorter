@@ -1,6 +1,8 @@
 # Quick Image Sorter
 Quickly sort directories of images, sending them to the desired folder(s).
 
+<img src='https://drive.google.com/file/d/15f18oRqiSli9P8yWfk00bIq1yeX85UeB/view?usp=sharing='>
+
 # Instructions:
 1. Run Install.bat 
 2. Run Run.bat
