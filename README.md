@@ -24,4 +24,4 @@ Arrow Keys: Previous and Last Image
 - GIF Support
 - WIP
 
-UI Assets Generated with the <a href="https://chat.openai.com/g/g-H0UwwgFOe-ui-asset-generator">UI Asset Generator</a> Custom GPT:  
+UI Assets Generated with the <a href="https://chat.openai.com/g/g-H0UwwgFOe-ui-asset-generator">UI Asset Generator</a> Custom GPT.
