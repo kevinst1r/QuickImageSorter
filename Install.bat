@@ -15,5 +15,5 @@ echo Installing PyQt5...
 python -m pip install PyQt5
 echo PyQt5 installation complete.
 
-echo Script finished. You can now run the Python application.
+echo Script finished. You can now run Quick Image Sorter!
 pause
