@@ -23,3 +23,5 @@ Arrow Keys: Previous and Last Image
 - When you select a folder when moving all the images it automatically saves all the images to the specified folders (Favorite/Edit).  If you Favorited and Edited it would get duplicated into both. <br />
 - GIF Support
 - WIP
+
+UI Assets Generated with this Custom GPT that I created:  https://chat.openai.com/g/g-H0UwwgFOe-ui-asset-generator
