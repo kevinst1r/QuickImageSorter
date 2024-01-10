@@ -8,7 +8,7 @@ FOR /F "delims=" %%i IN ('where python') DO SET "pythonPath=%%i"
 SET "scriptDir=%~dp0"
 
 :: Remove the trailing backslash
-SET "progPath=%scriptDir:~0,-1%\main.py"
+SET "progPath=%scriptDir:~0,-1%\..\main.py"
 
 :: Add to registry
 REG ADD "HKCR\Directory\Background\shell\OpenWithYourProgram" /t REG_SZ /d "Open with Quick Image Sorter" /f
