@@ -20,3 +20,4 @@ Arrow Keys: Previous and Last Image
 # Notes:
 - When you select a folder when moving all the images it automatically saves all the images to the specified folders (Favorite/Edit).  If you Favorited and Edited it would get duplicated into both. <br />
 - GIF Support
+- WIP
