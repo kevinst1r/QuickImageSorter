@@ -3,7 +3,6 @@
 from settings import SettingsDialog
 from utility import OutlinedLabel
 import os
-import sys
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy, QWIDGETSIZE_MAX, QShortcut, QToolTip, QMessageBox, QGraphicsDropShadowEffect
 from PyQt5.QtGui import QPixmap, QIcon, QPainter, QPalette, QColor, QKeySequence, QMovie, QFont, QBrush, QPainterPath, QPen
@@ -19,18 +18,12 @@ class ImageViewer(QMainWindow):
         self.setWindowIcon(QIcon('images/icon.png'))
         self.setGeometry(100, 100, 800, 800)
 
-        # Initialize the edits set
         self.edits = set()
-
         self.hideSorted = False
-
         self.originalImages = []
-
         self.show_filenames = True
         self.load_settings()
-
         self.favoriteIcon = QPixmap('images/favorite.png')
-
         self.imageFolder = ''
         self.images = []
         self.currentIndex = -1
@@ -76,8 +69,6 @@ class ImageViewer(QMainWindow):
         self.setButtonHoverStyle(self.nextButton, "Next Image (Right Arrow)")
         self.nextImageShortcut = QShortcut(QKeySequence("Right"), self)
         self.nextImageShortcut.activated.connect(self.next_image)
-        #self.setButtonHoverStyle(self.nextButton, "Go to Next Image (Shortcut: Right Arrow)")
-
 
         # Create the 'Previous' button with PNG icon
         self.prevButton = QPushButton(self.imageLabel)
@@ -90,8 +81,6 @@ class ImageViewer(QMainWindow):
         self.setButtonHoverStyle(self.prevButton, "Previous Image (Left Arrow)")
         self.prevImageShortcut = QShortcut(QKeySequence("Left"), self)
         self.prevImageShortcut.activated.connect(self.prev_image)
-        #self.setButtonHoverStyle(self.prevButton, "Go to Previous Image (Shortcut: Left Arrow)")
-
 
         # Create the 'Toggle Favorite' button with PNG icon
         self.favButton = QPushButton()
@@ -105,8 +94,6 @@ class ImageViewer(QMainWindow):
         self.toggleFavShortcut = QShortcut(QKeySequence("F"), self)
         self.toggleFavShortcut.activated.connect(self.toggle_favorite)
         self.favButton.setEnabled(False)
-        #self.setButtonHoverStyle(self.favButton, "Toggle Favorite (Shortcut: F)")
-
 
         # Create the 'Toggle Edit' button with a new icon
         self.editButton = QPushButton()
@@ -120,7 +107,6 @@ class ImageViewer(QMainWindow):
         self.toggleEditShortcut = QShortcut(QKeySequence("E"), self)
         self.toggleEditShortcut.activated.connect(self.toggle_edit)
         self.editButton.setEnabled(False)
-
 
         # Create the 'Add Directory' button with PNG icon
         self.addDirButton = QPushButton()
@@ -169,11 +155,8 @@ class ImageViewer(QMainWindow):
         self.setButtonHoverStyle(self.deleteButton, "Delete (Del)")
         self.deleteShortcut = QShortcut(QKeySequence("Del"), self)
         self.deleteShortcut.activated.connect(self.delete_image)
-
-        # In the ImageViewer.__init__ method, create the settings button:
-        #self.settingsButton = QPushButton(QIcon('images/move.png'), '', self)  # Add your settings icon path
-        #self.settingsButton.clicked.connect(self.open_settings_dialog)
         
+        # Create the 'Delete' button with PNG icon
         self.settingsButton = QPushButton()
         self.settingsButton.setIcon(QIcon('images/settings.png'))
         self.settingsButton.setIconSize(icon_size)
@@ -196,23 +179,11 @@ class ImageViewer(QMainWindow):
         self.setButtonHoverStyle(self.moveButton, "Move Images (M)")
         self.moveFavShortcut = QShortcut(QKeySequence("M"), self)
         self.moveFavShortcut.activated.connect(self.move_favorites)
-        #self.setButtonHoverStyle(self.moveButton, "Move Favorites (Shortcut: M)")
-
-
-        # Create vertical layouts for left and right buttons
-        #leftLayout = QVBoxLayout()
-        #leftLayout.addStretch()  # Add stretch for centering the button
-        #leftLayout.addWidget(self.prevButton)
-        #leftLayout.addStretch()  # Add stretch for centering the button
-
-        #rightLayout = QVBoxLayout()
-        #rightLayout.addStretch()  # Add stretch for centering the button
-        #rightLayout.addWidget(self.nextButton)
-        #rightLayout.addStretch()  # Add stretch for centering the button
 
         # Horizontal layout for other buttons with stretching
         buttonLayout = QHBoxLayout()
         buttonLayout.addStretch()  # Add stretch before buttons
+
         # Add remaining buttons here in the middle
         buttonLayout.addWidget(self.favButton)
         buttonLayout.addStretch()
@@ -253,7 +224,6 @@ class ImageViewer(QMainWindow):
         self.show_filenames = not self.show_filenames
         self.save_settings()  # Save the updated setting
         self.show_image()     # Refresh the image to reflect the change
-
 
     def open_settings_dialog(self):
         dialog = SettingsDialog(self)
@@ -300,7 +270,6 @@ class ImageViewer(QMainWindow):
         nextButtonY = (self.imageLabel.height() - buttonSize) // 2
         self.nextButton.setGeometry(nextButtonX, nextButtonY, buttonSize, buttonSize)
 
-
     def hide_all_sorted(self):
         if self.hideSorted:
             # Restore original images
@@ -339,9 +308,6 @@ class ImageViewer(QMainWindow):
             except Exception as e:
                 QMessageBox.critical(self, 'Error', f'An error occurred while deleting the file: {e}')
 
-
-
-
     def clear_all(self):
         # Confirmation dialog
         reply = QMessageBox.question(self, 'Clear All', 'Are you sure you want to clear all items?',
@@ -356,7 +322,6 @@ class ImageViewer(QMainWindow):
         else:
             # User chose 'No', so don't clear anything
             pass
-
 
     def add_directory(self):
         new_dir = QFileDialog.getExistingDirectory(self, "Select Additional Directory")
@@ -382,7 +347,6 @@ class ImageViewer(QMainWindow):
             else:
                 self.currentIndex = 0
                 self.show_image()
-
 
     def show_no_images_placeholder(self):
         # Function to show the 'no directory' placeholder and disable buttons
@@ -467,7 +431,6 @@ class ImageViewer(QMainWindow):
             self.editButton.setEnabled(False)
             self.filenameLabel.setText("")  # Clear filename label
 
-
     def overlay_icons_on_pixmap(self, painter, image_path):
         icon_size = QSize(75, 75)
         if self.currentIndex >= 0:
@@ -533,9 +496,6 @@ class ImageViewer(QMainWindow):
 
         self.filenameLabel.setGeometry(label_x, label_y, label_width, label_height)
 
-
-
-
     def resizeEvent(self, event):
         super(ImageViewer, self).resizeEvent(event)
         self.updateButtonPositions()
@@ -546,7 +506,6 @@ class ImageViewer(QMainWindow):
         if self.currentIndex < len(self.images) - 1:
             self.currentIndex += 1
             self.show_image()
-
 
     def prev_image(self):
         if self.currentIndex > 0:
@@ -650,7 +609,6 @@ class ImageViewer(QMainWindow):
             # Update the image list and index since files have been moved
             self.load_images()
 
-
     def setButtonHoverStyle(self, button, tooltip_text):
         button.setStyleSheet("""
             QPushButton {
@@ -681,7 +639,6 @@ class ImageViewer(QMainWindow):
         tooltipX = int(globalPos.x() + button.width() / 2)
         tooltipY = int(globalPos.y() - button.height() - 10)
         QToolTip.showText(QtCore.QPoint(tooltipX, tooltipY), text)
-
 
     def eventFilter(self, source, event):
         if event.type() == QtCore.QEvent.Enter and hasattr(source, 'hoverTimer'):

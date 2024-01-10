@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPalette, QColor, QBrush, QPainterPath, QPen, QPainter
 from PyQt5.QtCore import Qt
 
-
 def dark_palette():
     """
     Create a dark palette for the application.
