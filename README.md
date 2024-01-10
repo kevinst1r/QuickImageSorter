@@ -2,19 +2,19 @@
 Quickly sort directories of images, sending them to the desired folder(s).
 
 # Instructions:
-1. Run Install.bat
+1. Run Install.bat 
 2. Run Run.bat
 
 
 # Hotkeys:
-E: Edit
-F: Favorite
-M: Move all files
-C: Clear All Image
-A: Add Directory
-H: Hide all sorted toggle
-S: Settings
-1: Toggle Filename Visibility
+E: Edit 
+F: Favorite 
+M: Move all files 
+C: Clear All Image 
+A: Add Directory 
+H: Hide all sorted toggle 
+S: Settings 
+1: Toggle Filename Visibility 
 Arrow Keys for Previous and Last Image
 
 # Notes:
