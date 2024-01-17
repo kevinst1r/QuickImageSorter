@@ -493,7 +493,7 @@ class ImageViewer(QMainWindow):
         # Create and position the edit icon if the image is marked for edit
         if image_path in self.edits:
             self.editOverlay = QLabel(self.imageLabel)
-            edit_icon = QPixmap(edit_icon_path)
+            edit_icon = QPixmap(self.edit_icon_path)  # Use self.edit_icon_path instead of edit_icon_path
             self.editOverlay.setPixmap(edit_icon.scaled(icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.editOverlay.setGeometry(x_edit_icon, y_edit_icon, icon_size.width(), icon_size.height())
             self.editOverlay.show()
