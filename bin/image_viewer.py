@@ -2,6 +2,7 @@
 
 from bin.settings import SettingsDialog
 from bin.utility import OutlinedLabel
+from bin.SettingsManager import SettingsManager
 import os
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy, QWIDGETSIZE_MAX, QShortcut, QToolTip, QMessageBox, QGraphicsDropShadowEffect
@@ -40,11 +41,14 @@ class ImageViewer(QMainWindow):
         self.setWindowIcon(QIcon(icon_icon_path))
         self.setGeometry(100, 100, 800, 800)
 
+        self.settingsManager = SettingsManager()
+        self.show_filenames = self.settingsManager.get_setting("show_filenames")
+
         self.edits = set()
         self.hideSorted = False
         self.originalImages = []
-        self.show_filenames = True
-        self.load_settings()
+        #self.show_filenames = True
+        #self.load_settings()
         self.favoriteIcon = QPixmap(favorite_icon_path)
 
         self.imageFolder = initialDir if initialDir else ''
@@ -79,129 +83,18 @@ class ImageViewer(QMainWindow):
         self.filenameLabel.setMargin(10)  # Add some margin if needed
 
         # Set maximum size of the buttons to the size of the icons
-        icon_size = QSize(50, 50)
+        #icon_size = QSize(50, 50)
 
-        # Create the 'Next' button with PNG icon
-        self.nextButton = QPushButton(self.imageLabel)
-        self.nextButton.setIcon(QIcon(next_icon_path))  # Set your PNG file path
-        self.nextButton.setIconSize(icon_size)
-        self.nextButton.setMaximumSize(icon_size)
-        self.nextButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.nextButton.clicked.connect(self.next_image)
-        self.nextButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.nextButton, "Next Image (Right Arrow)")
-        self.nextImageShortcut = QShortcut(QKeySequence("Right"), self)
-        self.nextImageShortcut.activated.connect(self.next_image)
-
-        # Create the 'Previous' button with PNG icon
-        self.prevButton = QPushButton(self.imageLabel)
-        self.prevButton.setIcon(QIcon(back_icon_path))  # Set your PNG file path
-        self.prevButton.setIconSize(icon_size)
-        self.prevButton.setMaximumSize(icon_size)
-        self.prevButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.prevButton.clicked.connect(self.prev_image)
-        self.prevButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.prevButton, "Previous Image (Left Arrow)")
-        self.prevImageShortcut = QShortcut(QKeySequence("Left"), self)
-        self.prevImageShortcut.activated.connect(self.prev_image)
-
-        # Create the 'Toggle Favorite' button with PNG icon
-        self.favButton = QPushButton()
-        self.favButton.setIcon(QIcon(favorite_icon_path))  # Set your PNG file path
-        self.favButton.setIconSize(icon_size)
-        self.favButton.setMaximumSize(icon_size)
-        self.favButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.favButton.clicked.connect(self.toggle_favorite)
-        self.favButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.favButton, "Favorite (F)")
-        self.toggleFavShortcut = QShortcut(QKeySequence("F"), self)
-        self.toggleFavShortcut.activated.connect(self.toggle_favorite)
-        self.favButton.setEnabled(False)
-
-        # Create the 'Toggle Edit' button with a new icon
-        self.editButton = QPushButton()
-        self.editButton.setIcon(QIcon(edit_icon_path))  # Set your PNG file path for the 'edit' icon
-        self.editButton.setIconSize(icon_size)
-        self.editButton.setMaximumSize(icon_size)
-        self.editButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.editButton.clicked.connect(self.toggle_edit)
-        self.editButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.editButton, "Edit (E)")
-        self.toggleEditShortcut = QShortcut(QKeySequence("E"), self)
-        self.toggleEditShortcut.activated.connect(self.toggle_edit)
-        self.editButton.setEnabled(False)
-
-        # Create the 'Add Directory' button with PNG icon
-        self.addDirButton = QPushButton()
-        self.addDirButton.setIcon(QIcon(add_icon_path))  # Set your PNG file path
-        self.addDirButton.setIconSize(icon_size)
-        self.addDirButton.setMaximumSize(icon_size)
-        self.addDirButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.addDirButton.clicked.connect(self.add_directory)
-        self.addDirButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.addDirButton, "Add Directory (A)")
-        self.toggleAddShortcut = QShortcut(QKeySequence("A"), self)
-        self.toggleAddShortcut.activated.connect(self.add_directory)
-
-        # Create the 'Clear All' button with PNG icon
-        self.clearButton = QPushButton()
-        self.clearButton.setIcon(QIcon(clear_icon_path))  # Set your PNG file path
-        self.clearButton.setIconSize(icon_size)
-        self.clearButton.setMaximumSize(icon_size)
-        self.clearButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.clearButton.clicked.connect(self.clear_all)
-        self.clearButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.clearButton, "Clear All (C)")
-        self.clearShortcut = QShortcut(QKeySequence("C"), self)
-        self.clearShortcut.activated.connect(self.clear_all)
-
-        # Create the 'Clear All Sorted' button with PNG icon
-        self.clearSortedButton = QPushButton()
-        self.clearSortedButton.setIcon(QIcon(hide_icon_path))  # Set your PNG file path
-        self.clearSortedButton.setIconSize(icon_size)
-        self.clearSortedButton.setMaximumSize(icon_size)
-        self.clearSortedButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.clearSortedButton.clicked.connect(self.hide_all_sorted)
-        self.clearSortedButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.clearSortedButton, "Hide/Show All Sorted (H)")
-        self.clearSortedShortcut = QShortcut(QKeySequence("H"), self)
-        self.clearSortedShortcut.activated.connect(self.hide_all_sorted)
-
-        # Create the 'Delete' button with PNG icon
-        self.deleteButton = QPushButton()
-        self.deleteButton.setIcon(QIcon(delete_icon_path))  # Set your PNG file path for the 'delete' icon
-        self.deleteButton.setIconSize(icon_size) 
-        self.deleteButton.setMaximumSize(icon_size)
-        self.deleteButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.deleteButton.clicked.connect(self.delete_image)
-        self.deleteButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.deleteButton, "Delete (Del)")
-        self.deleteShortcut = QShortcut(QKeySequence("Del"), self)
-        self.deleteShortcut.activated.connect(self.delete_image)
-        
-        # Create the 'Settings' button with PNG icon
-        self.settingsButton = QPushButton()
-        self.settingsButton.setIcon(QIcon(settings_icon_path))
-        self.settingsButton.setIconSize(icon_size)
-        self.settingsButton.setMaximumSize(icon_size)
-        self.settingsButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.settingsButton.clicked.connect(self.open_settings_dialog)
-        self.settingsButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.settingsButton, "Settings (S)")
-        self.settingsShortcut = QShortcut(QKeySequence("S"), self)
-        self.settingsShortcut.activated.connect(self.open_settings_dialog)
-
-        # Create the 'Move Favorites' button with PNG icon
-        self.moveButton = QPushButton()
-        self.moveButton.setIcon(QIcon(move_icon_path))  # Set your PNG file path
-        self.moveButton.setIconSize(icon_size)
-        self.moveButton.setMaximumSize(icon_size)
-        self.moveButton.setStyleSheet("background: transparent; border: none; padding: 4px;")
-        self.moveButton.clicked.connect(self.move_favorites)
-        self.moveButton.setCursor(Qt.PointingHandCursor)
-        self.setButtonHoverStyle(self.moveButton, "Move Images (M)")
-        self.moveFavShortcut = QShortcut(QKeySequence("M"), self)
-        self.moveFavShortcut.activated.connect(self.move_favorites)
+        self.nextButton = self.create_button(next_icon_path, "Next Image (Right Arrow)", "Right", self.next_image)
+        self.prevButton = self.create_button(back_icon_path, "Previous Image (Left Arrow)", "Left", self.prev_image)
+        self.favButton = self.create_button(favorite_icon_path, "Favorite (F)", "F", self.toggle_favorite)
+        self.editButton = self.create_button(edit_icon_path, "Edit (E)", "E", self.toggle_edit)
+        self.addDirButton = self.create_button(add_icon_path, "Add Directory (A)", "A", self.add_directory)
+        self.clearButton = self.create_button(clear_icon_path, "Clear All (C)", "C", self.clear_all)
+        self.hideButton = self.create_button(hide_icon_path, "Hide/Show All Sorted (H)", "H", self.hide_all_sorted)
+        self.deleteButton = self.create_button(delete_icon_path, "Delete (Del)", "Del", self.delete_image)
+        self.settingsButton = self.create_button(settings_icon_path, "Settings (S)", "S", self.open_settings_dialog)
+        self.moveButton = self.create_button(move_icon_path, "Move Images (M)", "M", self.move_favorites)
 
         # Horizontal layout for other buttons with stretching
         buttonLayout = QHBoxLayout()
@@ -216,7 +109,7 @@ class ImageViewer(QMainWindow):
         buttonLayout.addStretch()
         buttonLayout.addWidget(self.clearButton)
         buttonLayout.addStretch()
-        buttonLayout.addWidget(self.clearSortedButton)
+        buttonLayout.addWidget(self.hideButton)
         buttonLayout.addStretch()
         buttonLayout.addWidget(self.deleteButton)
         buttonLayout.addStretch()
@@ -243,45 +136,45 @@ class ImageViewer(QMainWindow):
 
         self.load_images()
 
+    def create_button(self, icon_path, tooltip_text, shortcut_key, callback):
+        button = QPushButton(self.imageLabel)
+        button.setIcon(QIcon(icon_path))
+        button.setIconSize(QSize(50, 50))
+        button.setMaximumSize(QSize(50, 50))
+        button.setStyleSheet("""
+            QPushButton {
+                background: transparent; 
+                border: none; 
+                padding: 4px; 
+                icon-size: 50px;
+            }
+            QPushButton:hover {
+                icon-size: 40px;
+            }
+        """)
+        button.clicked.connect(callback)
+        self.setButtonHoverStyle(button, tooltip_text)
+        button.installEventFilter(self)
+        if shortcut_key:
+            shortcut = QShortcut(QKeySequence(shortcut_key), self)
+            shortcut.activated.connect(callback)
+        return button
+
     def toggle_show_filenames(self):
         self.show_filenames = not self.show_filenames
-        self.save_settings()  # Save the updated setting
-        self.show_image()     # Refresh the image to reflect the change
+        self.settingsManager.set_setting("show_filenames", self.show_filenames)
+        self.show_image()
 
     def open_settings_dialog(self):
-        dialog = SettingsDialog(self)
+        dialog = SettingsDialog(self.settingsManager, self)
         
-        # Load the current setting and update the checkbox
-        dialog.filenameCheckbox.setChecked(self.show_filenames)
-
         if dialog.exec_():
-            # Update the setting based on the checkbox state
-            self.show_filenames = dialog.filenameCheckbox.isChecked()
-            self.save_settings()  # Implement this method to save settings
-            self.show_image()  # Refresh to apply the setting
+            # Refresh to apply the setting
+            self.show_filenames = self.settingsManager.get_setting("show_filenames")
+            self.show_image()
         else:
             print("Settings canceled")
 
-    def save_settings(self):
-        settings_path = os.path.join(os.environ['APPDATA'], 'ECP Apps', 'QuickImageSorterSettings.json')
-        os.makedirs(os.path.dirname(settings_path), exist_ok=True)
-
-        settings_data = {
-            "show_filenames": self.show_filenames
-        }
-
-        with open(settings_path, 'w') as settings_file:
-            json.dump(settings_data, settings_file, indent=4)
-
-    def load_settings(self):
-        settings_path = os.path.join(os.environ['APPDATA'], 'ECP Apps', 'QuickImageSorterSettings.json')
-
-        if os.path.exists(settings_path):
-            with open(settings_path, 'r') as settings_file:
-                settings_data = json.load(settings_file)
-                self.show_filenames = settings_data.get("show_filenames", True)
-        else:
-            self.show_filenames = True
 
     def updateButtonPositions(self):
         buttonSize = 50  # Define the size of your buttons
@@ -355,23 +248,27 @@ class ImageViewer(QMainWindow):
             self.show_image()
 
     def load_images(self):
-        if not self.imageFolder:
-            self.imageFolder = QFileDialog.getExistingDirectory(self, "Select Directory")
-        
-        if self.imageFolder:
-            # Filter for common image file extensions
-            image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff']
-            self.images = [os.path.join(self.imageFolder, f) for f in os.listdir(self.imageFolder) 
-                           if os.path.isfile(os.path.join(self.imageFolder, f)) and 
-                           os.path.splitext(f)[1].lower() in image_extensions]
+        try:
+            if not self.imageFolder:
+                self.imageFolder = QFileDialog.getExistingDirectory(self, "Select Directory")
             
-            self.originalImages = self.images.copy()  # Store the original list of images
+            if self.imageFolder:
+                # Filter for common image file extensions
+                image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff']
+                self.images = [os.path.join(self.imageFolder, f) for f in os.listdir(self.imageFolder) 
+                            if os.path.isfile(os.path.join(self.imageFolder, f)) and 
+                            os.path.splitext(f)[1].lower() in image_extensions]
+                
+                self.originalImages = self.images.copy()  # Store the original list of images
 
-            if not self.images:
-                self.show_no_images_placeholder()
-            else:
-                self.currentIndex = 0
-                self.show_image()
+                if not self.images:
+                    self.show_no_images_placeholder()
+                else:
+                    self.currentIndex = 0
+                    self.show_image()
+        except Exception as e:
+            QMessageBox.critical(self, 'Error', f'Error loading images: {e}')
+
 
     def show_no_images_placeholder(self):
         # Function to show the 'no directory' placeholder and disable buttons
@@ -572,73 +469,80 @@ class ImageViewer(QMainWindow):
         self.show_image()
 
     def move_favorites(self):
-        destination = QFileDialog.getExistingDirectory(self, "Select Destination Directory")
-        if destination:
-            successful_moves = 0
-            failed_moves = 0
+        try:
+            destination = QFileDialog.getExistingDirectory(self, "Select Destination Directory")
+            if destination:
+                successful_moves = 0
+                failed_moves = 0
 
-            favorites_dest = os.path.join(destination, "Favorites")
-            edits_dest = os.path.join(destination, "Edits")
-
-            # Check if there are any favorites or edits to move
-            if self.favorites:
                 favorites_dest = os.path.join(destination, "Favorites")
-                os.makedirs(favorites_dest, exist_ok=True)
-
-            if self.edits:
                 edits_dest = os.path.join(destination, "Edits")
-                os.makedirs(edits_dest, exist_ok=True)
 
-            # Move favorites
-            for fav in list(self.favorites):
-                try:
-                    # Stop the QMovie if the current image is a GIF and being displayed
-                    if fav.lower().endswith('.gif') and fav == self.images[self.currentIndex]:
-                        self.imageLabel.setMovie(None)
+                # Check if there are any favorites or edits to move
+                if self.favorites:
+                    favorites_dest = os.path.join(destination, "Favorites")
+                    os.makedirs(favorites_dest, exist_ok=True)
 
-                    new_path = os.path.join(favorites_dest, os.path.basename(fav))
-                    # Check if also in edits
-                    if fav in self.edits:
-                        # Duplicate the file for the edits folder
-                        shutil.copy(fav, new_path)
-                        new_edit_path = os.path.join(edits_dest, os.path.basename(fav))
-                        shutil.move(fav, new_edit_path)  # This will remove the original after moving
-                        self.edits.remove(fav)
-                    else:
-                        shutil.move(fav, new_path)
-                    self.favorites.remove(fav)
-                    successful_moves += 1
-                except Exception as e:
-                    print(f"Failed to move {fav}: {e}")
-                    failed_moves += 1
+                if self.edits:
+                    edits_dest = os.path.join(destination, "Edits")
+                    os.makedirs(edits_dest, exist_ok=True)
 
-            # Refresh the display after moving files
-            self.show_image()
+                # Move favorites
+                for fav in list(self.favorites):
+                    try:
+                        # Stop the QMovie if the current image is a GIF and being displayed
+                        if fav.lower().endswith('.gif') and fav == self.images[self.currentIndex]:
+                            self.imageLabel.setMovie(None)
 
-            # Move edits (only those not already moved)
-            for edit in list(self.edits):
-                try:
-                    new_path = os.path.join(edits_dest, os.path.basename(edit))
-                    shutil.move(edit, new_path)
-                    self.edits.remove(edit)
-                    successful_moves += 1
-                except Exception as e:
-                    print(f"Failed to move {edit}: {e}")
-                    failed_moves += 1
+                        new_path = os.path.join(favorites_dest, os.path.basename(fav))
+                        # Check if also in edits
+                        if fav in self.edits:
+                            # Duplicate the file for the edits folder
+                            shutil.copy(fav, new_path)
+                            new_edit_path = os.path.join(edits_dest, os.path.basename(fav))
+                            shutil.move(fav, new_edit_path)  # This will remove the original after moving
+                            self.edits.remove(fav)
+                        else:
+                            shutil.move(fav, new_path)
+                        self.favorites.remove(fav)
+                        successful_moves += 1
+                    except Exception as e:
+                        print(f"Failed to move {fav}: {e}")
+                        failed_moves += 1
 
-            if successful_moves:
-                print(f"Successfully moved {successful_moves} images.")
-            if failed_moves:
-                print(f"Failed to move {failed_moves} images.")
+                # Refresh the display after moving files
+                self.show_image()
 
-            # Update the image list and index since files have been moved
-            self.load_images()
+                # Move edits (only those not already moved)
+                for edit in list(self.edits):
+                    try:
+                        new_path = os.path.join(edits_dest, os.path.basename(edit))
+                        shutil.move(edit, new_path)
+                        self.edits.remove(edit)
+                        successful_moves += 1
+                    except Exception as e:
+                        print(f"Failed to move {edit}: {e}")
+                        failed_moves += 1
+
+                if successful_moves:
+                    print(f"Successfully moved {successful_moves} images.")
+                if failed_moves:
+                    print(f"Failed to move {failed_moves} images.")
+
+                # Update the image list and index since files have been moved
+                self.load_images()
+
+        except Exception as e:
+            QMessageBox.critical(self, 'Error', f'An error occurred while moving files: {e}')
+
 
     def setButtonHoverStyle(self, button, tooltip_text):
         button.setStyleSheet("""
             QPushButton {
                 background: transparent; 
-                border: none;
+                border: none; 
+                padding: 4px; 
+                icon-size: 50px;
             }
             QPushButton:hover {
                 border: 2px solid white;
@@ -647,9 +551,9 @@ class ImageViewer(QMainWindow):
         """)
         button.setCursor(Qt.PointingHandCursor)
 
-        # Set up timer for hover
+        # Set up timer for tooltip hover
         button.hoverTimer = QTimer(self)
-        button.hoverTimer.setInterval(2000)  # 1000 milliseconds = 1 second
+        button.hoverTimer.setInterval(3000)  # 3000 milliseconds = 3 seconds
         button.hoverTimer.setSingleShot(True)
         button.hoverTimer.timeout.connect(
             lambda: self.showCustomToolTip(button, tooltip_text)
@@ -662,12 +566,18 @@ class ImageViewer(QMainWindow):
         # Custom tooltip position
         globalPos = button.mapToGlobal(QtCore.QPoint(0, 0))
         tooltipX = int(globalPos.x() + button.width() / 2)
-        tooltipY = int(globalPos.y() - button.height() - 10)
+        tooltipY = int(globalPos.y() - button.height() - 20)  # Adjust this value to move tooltip up
         QToolTip.showText(QtCore.QPoint(tooltipX, tooltipY), text)
 
     def eventFilter(self, source, event):
-        if event.type() == QtCore.QEvent.Enter and hasattr(source, 'hoverTimer'):
-            source.hoverTimer.start()
-        elif event.type() == QtCore.QEvent.Leave and hasattr(source, 'hoverTimer'):
-            source.hoverTimer.stop()
+        if isinstance(source, QPushButton):
+            if event.type() == QtCore.QEvent.Enter:
+                # Start the tooltip timer and shrink icon
+                source.setIconSize(QSize(40, 40))
+                source.hoverTimer.start()
+            elif event.type() == QtCore.QEvent.Leave:
+                # Stop the tooltip timer, hide tooltip, and reset icon size
+                source.setIconSize(QSize(50, 50))
+                source.hoverTimer.stop()
+                QToolTip.hideText()
         return super(ImageViewer, self).eventFilter(source, event)
