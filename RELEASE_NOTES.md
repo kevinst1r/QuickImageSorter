@@ -2,7 +2,7 @@
 
 ## [1.0.1] - 2024-01-19
 ### Added
-- Botton Hover Effects (Shrink)
+- Button Hover Effects (Shrink)
 - Uninstaller Added
 - Advanced Installer Added (Add to Program Files, Desktop, and/or Start Menu)
 
