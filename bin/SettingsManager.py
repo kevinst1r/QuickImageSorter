@@ -6,7 +6,11 @@ import json
 class SettingsManager:
     def __init__(self):
         self.settings_file = os.path.join(os.environ['APPDATA'], 'ECP Apps', 'QuickImageSorterSettings.json')
-        self.settings = {"show_filenames": True}
+        self.settings = {
+            "show_filenames": True, 
+            "theme": "dark",
+            "icon_size": "Normal"  # Default value
+        }
         self.load_settings()
 
     def load_settings(self):
@@ -24,4 +28,16 @@ class SettingsManager:
 
     def set_setting(self, key, value):
         self.settings[key] = value
+        self.save_settings()
+
+    def get_icon_size(self):
+        return self.settings.get("icon_size", "Normal")
+
+    def set_icon_size(self, size):
+        self.settings["icon_size"] = size
+        self.save_settings()
+
+    # New method to set icon size
+    def set_icon_size(self, size):
+        self.settings["icon_size"] = size
         self.save_settings()

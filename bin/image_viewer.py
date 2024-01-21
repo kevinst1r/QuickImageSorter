@@ -3,8 +3,9 @@
 from bin.settings import SettingsDialog
 from bin.utility import OutlinedLabel
 from bin.SettingsManager import SettingsManager
+from bin.utility import dark_palette, light_palette, dark_palette_2, light_palette_2
 import os
-import json
+#import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy, QWIDGETSIZE_MAX, QShortcut, QToolTip, QMessageBox, QGraphicsDropShadowEffect
 from PyQt5.QtGui import QPixmap, QIcon, QPainter, QPalette, QColor, QKeySequence, QMovie, QFont, QBrush, QPainterPath, QPen
 from PyQt5.QtCore import QDir, Qt, QSize, QTimer
@@ -64,6 +65,8 @@ class ImageViewer(QMainWindow):
         self.imageLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Allow label to expand
         self.imageLabel.setFocusPolicy(Qt.NoFocus)
 
+        # Define apply_theme as an instance method
+        self.apply_theme(QApplication.instance(), self.settingsManager.get_setting("theme"))
 
         # Filename label initialization with outlined text
         self.filenameLabel = OutlinedLabel(self.imageLabel)  # Use OutlinedLabel instead of QLabel
@@ -84,6 +87,9 @@ class ImageViewer(QMainWindow):
 
         # Set maximum size of the buttons to the size of the icons
         #icon_size = QSize(50, 50)
+
+        # Initialize currentIconSize before creating buttons
+        self.currentIconSize = self.icon_size_mapping(self.settingsManager.get_icon_size())
 
         self.nextButton = self.create_button(next_icon_path, "Next Image (Right Arrow)", "Right", self.next_image)
         self.prevButton = self.create_button(back_icon_path, "Previous Image (Left Arrow)", "Left", self.prev_image)
@@ -131,25 +137,61 @@ class ImageViewer(QMainWindow):
 
         self.show()  # Ensure the window is shown
         QApplication.processEvents()  # Process any pending events to update the layout
-        self.update_filename_label_position()  # Update the label position
-        self.updateButtonPositions()
 
         self.load_images()
+
+        self.update_ui_with_settings()
+
+        self.updateButtonPositions()
+        self.update_filename_label_position()
+
+    def icon_size_mapping(self, size_text):
+        size_dict = {
+            "Small": 30,
+            "Normal": 50,
+            "Large": 70
+        }
+        return size_dict.get(size_text, 50)  # Default to "Normal" size
+
+    def update_font_sizes(self):
+        # Define font sizes based on icon size
+        font_size = {
+            "Small": 10,
+            "Normal": 14,
+            "Large": 18
+        }.get(self.settingsManager.get_icon_size(), 14)
+
+        # Update font size for filename label
+        font = self.filenameLabel.font()
+        font.setPointSize(font_size)
+        self.filenameLabel.setFont(font)
+
+    def update_ui_with_settings(self):
+        self.currentIconSize = self.icon_size_mapping(self.settingsManager.get_icon_size())
+        max_button_size = self.currentIconSize + 20
+
+        # Update button icon sizes and maximum sizes
+        for button in [self.nextButton, self.prevButton, self.favButton, self.editButton, self.addDirButton, self.clearButton, self.hideButton, self.deleteButton, self.settingsButton, self.moveButton]:
+            button.setIconSize(QSize(self.currentIconSize, self.currentIconSize))
+            button.setMaximumSize(QSize(max_button_size, max_button_size))
+            
+        self.update_font_sizes()
+
 
     def create_button(self, icon_path, tooltip_text, shortcut_key, callback):
         button = QPushButton(self.imageLabel)
         button.setIcon(QIcon(icon_path))
-        button.setIconSize(QSize(50, 50))
-        button.setMaximumSize(QSize(50, 50))
+        button.setIconSize(QSize(self.currentIconSize, self.currentIconSize))  # Set icon size based on currentIconSize
+        button.setMaximumSize(QSize(self.currentIconSize, self.currentIconSize))
         button.setStyleSheet("""
             QPushButton {
                 background: transparent; 
                 border: none; 
-                padding: 4px; 
-                icon-size: 50px;
+                padding: 4px;
             }
             QPushButton:hover {
-                icon-size: 40px;
+                border: 2px solid white;
+                border-radius: 5px;
             }
         """)
         button.clicked.connect(callback)
@@ -160,6 +202,19 @@ class ImageViewer(QMainWindow):
             shortcut.activated.connect(callback)
         return button
 
+
+    def apply_theme(self, app, theme):
+        if theme == "Dark":
+            app.setPalette(dark_palette())
+        elif theme == "Light":
+            app.setPalette(light_palette())
+        elif theme == "Dark 2":
+            app.setPalette(dark_palette_2())
+        elif theme == "Light 2":
+            app.setPalette(light_palette_2())
+        # Add more themes as necessary
+
+  
     def toggle_show_filenames(self):
         self.show_filenames = not self.show_filenames
         self.settingsManager.set_setting("show_filenames", self.show_filenames)
@@ -167,24 +222,46 @@ class ImageViewer(QMainWindow):
 
     def open_settings_dialog(self):
         dialog = SettingsDialog(self.settingsManager, self)
-        
         if dialog.exec_():
-            # Refresh to apply the setting
+            # Apply the selected theme
+            theme = self.settingsManager.get_setting("theme")
+            self.apply_theme(QApplication.instance(), theme)
+
+            # Update and apply other settings
             self.show_filenames = self.settingsManager.get_setting("show_filenames")
+            self.update_ui_with_settings()  # Update icon sizes and other UI elements
+
+            # Refresh the image display
             self.show_image()
+
+            # Force a resize event to update the layout
+            self.resize(self.width(), self.height())
+
+            # Process any pending events to update the layout
+            QApplication.processEvents()
+
+            self.updateButtonPositions()
+            self.update_filename_label_position()
         else:
             print("Settings canceled")
 
 
+
     def updateButtonPositions(self):
-        buttonSize = 50  # Define the size of your buttons
-        prevButtonX = 10  # Left margin for prevButton
+        # Adjust these values as needed
+        margin = 10  # Margin from the edges of the window
+        buttonSize = self.currentIconSize  # Use the current icon size
+
+        # Calculate the position for the prevButton
+        prevButtonX = margin
         prevButtonY = (self.imageLabel.height() - buttonSize) // 2
         self.prevButton.setGeometry(prevButtonX, prevButtonY, buttonSize, buttonSize)
 
-        nextButtonX = self.imageLabel.width() - buttonSize - 10  # Right margin for nextButton
+        # Calculate the position for the nextButton
+        nextButtonX = self.imageLabel.width() - buttonSize - margin
         nextButtonY = (self.imageLabel.height() - buttonSize) // 2
         self.nextButton.setGeometry(nextButtonX, nextButtonY, buttonSize, buttonSize)
+
 
     def hide_all_sorted(self):
         if self.hideSorted:
@@ -343,6 +420,7 @@ class ImageViewer(QMainWindow):
             self.filenameLabel.setText(os.path.basename(image_path))
 
             # Update filename label positioning
+            self.updateButtonPositions()
             self.update_filename_label_position()
 
         else:
@@ -421,8 +499,8 @@ class ImageViewer(QMainWindow):
     def resizeEvent(self, event):
         super(ImageViewer, self).resizeEvent(event)
         self.updateButtonPositions()
-        self.show_image()  # Update the image
-        self.update_filename_label_position()  # Update the label position
+        self.update_filename_label_position()
+        self.show_image()
 
     def next_image(self):
         if self.currentIndex < len(self.images) - 1:
@@ -542,7 +620,6 @@ class ImageViewer(QMainWindow):
                 background: transparent; 
                 border: none; 
                 padding: 4px; 
-                icon-size: 50px;
             }
             QPushButton:hover {
                 border: 2px solid white;
@@ -572,12 +649,9 @@ class ImageViewer(QMainWindow):
     def eventFilter(self, source, event):
         if isinstance(source, QPushButton):
             if event.type() == QtCore.QEvent.Enter:
-                # Start the tooltip timer and shrink icon
-                source.setIconSize(QSize(40, 40))
                 source.hoverTimer.start()
             elif event.type() == QtCore.QEvent.Leave:
-                # Stop the tooltip timer, hide tooltip, and reset icon size
-                source.setIconSize(QSize(50, 50))
                 source.hoverTimer.stop()
                 QToolTip.hideText()
         return super(ImageViewer, self).eventFilter(source, event)
+
