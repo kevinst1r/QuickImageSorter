@@ -5,6 +5,9 @@
 - Themes (Dark, Light, Dark 2, Light 2)
 - UI Size (Small, Normal, Large)
 
+### Removed
+- Botton Hover Effects (Shrink) (UI bugs with resizing)
+
 ## [1.0.1] - 2024-01-19
 ### Added
 - Botton Hover Effects (Shrink)
