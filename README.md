@@ -14,6 +14,8 @@ Quickly sort directories of images, sending them to the desired folder(s).
 - Hide All Sorted hides all the images you have already sorted.  They can be brought back by pressing again.
 - ADD/DELETE Right Click files must me opened as Administrator (Adds a 'Open with Quick Image Viewer' option when you right click in folders)  (WINDOWS 10 ONLY FOR  NOW)
 - Hover over buttons for Tooltips
+- Themes
+- UI Size
 - GIF Supported
 - WIP
 
